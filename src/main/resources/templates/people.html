@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Люди</title>
+</head>
+<body>
+<h1>Список людей</h1>
+<table>
+    <thead>
+    <tr>
+        <th>ФИО</th>
+        <th>Адрес</th>
+        <th>Телефон</th>
+        <th>Email</th>
+        <th>Действия</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="person : ${person}">
+        <td th:text="${person.fio}"></td>
+        <td th:text="${person.address}"></td>
+        <td th:text="${person.number}"></td>
+        <td th:text="${person.email}"></td>
+        <td>
+            <a th:href="@{/people/{id}(id=${person.id})}">Просмотр</a>
+            <a th:href="@{/people/{id}/edit(id=${person.id})}">Редактировать</a>
+            <form th:action="@{/people/{id}/delete(id=${person.id})}" method="post" th:method="delete">
+                <button type="submit">Удалить</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<a href="/people/create">Создать нового человека</a>
+</body>
+</html>
