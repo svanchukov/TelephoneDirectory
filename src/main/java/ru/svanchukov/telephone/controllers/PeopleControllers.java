@@ -2,92 +2,52 @@ package ru.svanchukov.telephone.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.svanchukov.telephone.dto.CreatePersonDTO;
+import ru.svanchukov.telephone.dto.UpdatePersonDTO;
 import ru.svanchukov.telephone.models.Person;
 import ru.svanchukov.telephone.service.PeopleService;
 
-@Controller
+import java.util.List;
+
 @RequestMapping("/people")
-@RequiredArgsConstructor
+@RestController
 public class PeopleControllers {
 
     private final PeopleService peopleService;
 
-    @GetMapping("/hello")
-    public String showAllPeople(Model model) {
-        model.addAttribute("person", peopleService.findAll());
+    public PeopleControllers(PeopleService peopleService) {
+        this.peopleService = peopleService;
+    }
 
-        return "people";
+    @GetMapping
+    public ResponseEntity<List<Person>> getAllPeople() {
+        List<Person> people = peopleService.findAll();
+        return ResponseEntity.ok(people);
     }
 
     @GetMapping("/{id}")
-    public String showUser(@PathVariable("id") int id, Model model) {
-        Person foundUser = peopleService.findOne(id);
-        if (foundUser == null) {
-            return "error";
-        }
-        model.addAttribute("person", foundUser);
-        return "person";
-    }
-
-    @GetMapping("/{id}/edit")
-    public String showEditForm(@PathVariable("id") int id, Model model) {
+    public ResponseEntity<Person> getPersonById(@PathVariable("id") int id) {
         Person person = peopleService.findOne(id);
-        if (person == null) {
-            return "error";
-        }
-        model.addAttribute("person", person);
-        return "edit";
+        return ResponseEntity.ok(person);
     }
 
-
-    @PostMapping("/{id}/edit")
-    public String editPerson(@PathVariable("id") int id,
-                             @ModelAttribute("person") @Valid Person person,
-                             BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return "edit";
-        }
-        peopleService.update(id, person);
-        return "redirect:/people";
+    @PostMapping
+    public ResponseEntity<String> createPerson(@RequestBody @Valid CreatePersonDTO personDTO) {
+        peopleService.save(personDTO);
+        return ResponseEntity.ok("Person created successfully");
     }
 
-    @GetMapping("/create")
-    public String showCreateForm(Model model) {
-        model.addAttribute("person", new Person());
-        return "create";
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updatePerson(@PathVariable("id") int id, @RequestBody @Valid UpdatePersonDTO updatePersonDTO) {
+        peopleService.update(id, updatePersonDTO);
+        return ResponseEntity.ok("Person updated successfully");
     }
 
-    @PostMapping("/create")
-    public String create(@ModelAttribute("person") Person person) {
-        peopleService.save(person);
-
-        return "redirect:/people";
-    }
-
-    @DeleteMapping("{id}/delete")
-    public String delete(@PathVariable("id") int id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deletePerson(@PathVariable("id") int id) {
         peopleService.delete(id);
-
-        return "redirect:/people";
+        return ResponseEntity.ok("Person deleted successfully");
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

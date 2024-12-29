@@ -1,37 +1,25 @@
-package ru.svanchukov.telephone.models;
+package ru.svanchukov.telephone.dto;
 
-import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
-@Entity
-@Table
-public class Person {
+public class CreatePersonDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
-
-    @Column(name = "fio")
+    @NotBlank(message = "ФИО не должно быть пустым")
     private String fio;
 
-    @Column(name = "address")
+    @NotBlank(message = "Адрес не должен быть пустым")
     private String address;
 
-    @Column(name = "number")
+    @NotBlank(message = "Номер телефона не должен быть пустым")
+    @Pattern(regexp = "\\+?\\d{10,15}", message = "Некорректный номер телефона")
     private String number;
 
-    @Column(name = "email")
+    @Email(message = "Некорректный email")
     private String email;
 
     // Геттеры и сеттеры
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getFio() {
         return fio;
     }
